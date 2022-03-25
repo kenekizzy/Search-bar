@@ -1,24 +1,40 @@
-import logo from './logo.svg';
+import React from "react"
 import './App.css';
+import Body from './Components/Body';
+import Navbar from "./Components/Navbar"
+import Scroll from "./Components/Scroll"
+import ErrorBoundary from "./Components/Error"
+import 'tachyons'
+
 
 function App() {
+  
+  const [ robot, changeRobot ] = React.useState([])
+  const [ searchField, changeSearchField ] = React.useState("") 
+  const searchChange = (event) => {
+    changeSearchField(searchField => {
+        return searchField = event.target.value
+    })
+  }
+  const filteredRobots = robot.filter(robot => {
+    return robot.name.toLowerCase().includes(searchField.toLowerCase())
+  })
+React.useEffect(() => {
+  fetch("https://jsonplaceholder.typicode.com/users")
+  .then(res => res.json())
+  .then(data => changeRobot(data))
+}, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="tc">
+      <Navbar secrchChange={searchChange}/>
+      <Scroll>
+        <ErrorBoundary>
+          <Body robot = {filteredRobots}/>
+        </ErrorBoundary>
+      </Scroll>
     </div>
+    
   );
 }
 
